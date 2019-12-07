@@ -109,26 +109,29 @@ class UserController extends Controller
 
     public function deleteUser($id)
     {
-        $user_id = decrypt($id);
-        try{
-        $user = User::query()->findOrFail($user_id);
-        if ($user->position == 'highBoard' && !($user->committee->name == 'RAS' ||$user->committee->name == 'PES' || $user->committee->name =='WIE'))
-        {
-        $user->committee->director_id = null;
-        $user->committee->director = null;
-        $user->committee->update();
-        }
-        if ($user->position == 'EX_com')
-        {
-            $user->ex_com_option->delete();
-        }
+        // $user_id = decrypt($id);
+        $user_id = $id;
+        try {
+            $user = User::query()->findOrFail($user_id);
+            if ($user->position == 'highBoard' && !($user->committee->name == 'RAS' || $user->committee->name == 'PES' || $user->committee->name == 'WIE')) {
+                $user->committee->director_id = null;
+                $user->committee->director = null;
+                $user->committee->update();
+            }
+            if ($user->position == 'EX_com') {
+                $user->ex_com_option->delete();
+            }
 
-        $user->delete();
-        return response()->json(['success' => 'Deleted Successfully']);
-        } catch (\Exception $e)
-        {
-            return response()->json(['error' => 'User Not Found']);
+            $user->delete();
+            return response()->json([
+                'response' => 'Success',
+                'message' => 'User deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'response' => 'Error',
+                'message' => 'Deleting user failed',
+            ]);
         }
     }
-
 }
